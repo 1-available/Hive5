@@ -9,7 +9,7 @@ std::array<int, 2> Input::get_input() {
     std::array<int, 2> input_result = { -1, -1 };
 
     std::string input;
-    std::cout << "请输入坐标（例： A1 或 1A）：" << std::endl;
+    //std::cout << "请输入坐标（例： A1 或 1A）：" << std::endl;
     std::cin >> input;
 
     char letter = 0;
@@ -30,7 +30,7 @@ std::array<int, 2> Input::get_input() {
         int row = number - 1;     // 1-15 -> 0-14
         input_result = { row, col };
     } else {
-        std::cerr << "输入非法，请输入 A1 到 O15 范围内的坐标。" << std::endl;
+        //std::cerr << "输入非法，请输入 A1 到 O15 范围内的坐标。" << std::endl;
     }
 
     return input_result;

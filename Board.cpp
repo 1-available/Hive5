@@ -1,6 +1,7 @@
 #include "Board.h"
 
-#include <iostream>
+#include <sstream>
+#include <string>
 
 Board::Board(){
     for (auto& row : board) {
@@ -10,30 +11,32 @@ Board::Board(){
     }
 }
 
-void Board::display_board(){
+std::string Board::to_string() const{
+    std::stringstream sboard;
     int i=1;
     for (auto row : board) {
         for (auto order : row) {
             if (order==0){
-                std::cout << " + ";
+                sboard << " + ";
             } else if (order==1){
-                std::cout << " ● ";
+                sboard << " ● ";
             } else if (order==-1){
-                std::cout << " ○ ";
+                sboard << " ○ ";
             } else {
-                std::cout << "😼 ";
+                sboard << "😼 ";
             }
         }
-        std::cout << " " << i << std::endl;
+        sboard << " " << i << "\n";
         i++;
     }
-    std::cout << " A  B  C  D  E  F  G  H  I  G  K  L  M  N  O " << std::endl << std::endl;
+    sboard << " A  B  C  D  E  F  G  H  I  G  K  L  M  N  O \n";
+    return sboard.str();
 }
 
 void Board::add_piece(int x, int y, int player){
     board[x][y] = player;
 }
 
-int Board::get_piece(int x, int y){
+int Board::get_piece(int x, int y) const{
     return board[x][y];
 }

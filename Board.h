@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <string>
 
 class Board{
 public:
@@ -9,9 +10,9 @@ public:
     Board();
 
     /**
-     * @brief Make your board after every move visualable?
+     * @brief Store your board.
      */
-    void display_board();
+    std::string to_string() const;
 
     /**
      * @brief Add a piece to the board, without any check.
@@ -27,7 +28,7 @@ public:
      * @param y y (order, A-O) 0-14
      * @return status 1: player1, black, -1: player2, white, 0: blank
      */
-    int get_piece(int x, int y);
+    int get_piece(int x, int y) const;
 
 private:
     std::array<std::array<int, SIZE>, SIZE> board; // 1: black, -1: white, 0: blank

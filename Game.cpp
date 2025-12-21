@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Board.h"
 #include "Input.h"
+#include "UI.h"
 
 #include <iostream>
 #include <array>
@@ -9,34 +10,50 @@ Game::Game() {
     player = 1;
 }
 
+const Board& Game::get_board() const{
+    return board;
+}
+
+const int Game::get_player() const{
+    return player;
+}
+
 void Game::game_turn(){
     // 显示一张空棋盘
-    display_board();
+    ui.display_game(*this);
     while (true) {
-        // 获取用户输入
-        std::array<int, 2> position;
-        position = get_input();
-        // 检查位置是否可以落子：非乱码，范围内（否则position={-1,-1}），无子
-        // 如果可以落子，修改棋盘，换玩家
-        if ((position[0] != -1) && check_position(position)) {
-            // 改棋盘
-            board.add_piece(position[0], position[1], player);
-            // 展示改完后的棋盘
-            display_board();
-            // 检查输赢，如果赢了跳出循环
-            if (check_win()) {
-                return;
-            } else {
-                // 切换玩家
-                switch_player();
-            }
-        }
-        // 如果不可以，什么都不做
+        update();
     }
 }
 
-void Game::display_board(){
-    board.display_board();
+void Game::update(){
+    ui.clear_page();
+    ui.display_game(*this); //所有的显示都在这里进行，每一次循环刷新一次
+    // 获取用户输入
+    std::array<int, 2> position;
+    position = get_input();
+    if (position[0] == -1) {
+        write_message("输入非法，请输入 A1 到 O15 范围内的坐标。");
+        return;
+    }
+    // 检查位置是否可以落子：非乱码，范围内（否则position={-1,-1}），无子
+    // 如果可以落子，修改棋盘，换玩家
+    if (!check_position(position)) {
+        write_message("输入非法，该位置已有棋子");
+        return;
+    }
+    clear_message();
+    // 改棋盘
+    board.add_piece(position[0], position[1], player);
+    // 弃用，我们不再单独展示改完后的棋盘，直接随游戏统一刷新，这样更新逻辑里就不需要考虑怎么显示的问题了
+    // display_board();
+    // 检查输赢，如果赢了跳出循环
+    if (check_win()) {
+        return;
+    } else {
+        // 切换玩家
+        switch_player();
+    }
 }
 
 std::array<int, 2> Game::get_input(){
@@ -57,15 +74,19 @@ void Game::switch_player(){
         player = 1;
     } else
     {
-        std::cout << "Something is wrong, please look around if there is a third player..." << std::endl;
+        write_message("Something is wrong, please look around if there is a third player...");
     }
 }
 
 bool Game::check_position(std::array<int, 2> position){
-    if (board.get_piece(position[0], position[1]) == 0){
-        return true;
-    } else {
-        std::cout << "输入非法，该位置已有棋子" << std::endl;
-        return false;
-    }
+    return board.get_piece(position[0], position[1]) == 0;
+}
+
+void Game::write_message(std::string str){
+    message += str;
+    message += "\n";
+}
+
+void Game::clear_message(){
+    message = "";
 }
