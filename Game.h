@@ -21,6 +21,10 @@ private:
     void display_board();
     std::array<int, 2> get_input();
     /**
+     * @return true: this position is empty, false:this position already have piece
+     */
+    bool check_position(std::array<int, 2>);
+    /**
      * @return true: this player win; false: the game is playing
      */
     bool check_win();

@@ -16,17 +16,22 @@ void Game::game_turn(){
         // 获取用户输入
         std::array<int, 2> position;
         position = get_input();
-        // 改棋盘
-        board.add_piece(position[0], position[1], player);
-        // 展示改完后的棋盘
-        display_board();
-        // 检查输赢，如果赢了跳出循环
-        if (check_win()) {
-            return;
-        } else {
-            // 切换玩家
-            switch_player();
+        // 检查位置是否可以落子：非乱码，范围内（否则position={-1,-1}），无子
+        // 如果可以落子，修改棋盘，换玩家
+        if ((position[0] != -1) && check_position(position)) {
+            // 改棋盘
+            board.add_piece(position[0], position[1], player);
+            // 展示改完后的棋盘
+            display_board();
+            // 检查输赢，如果赢了跳出循环
+            if (check_win()) {
+                return;
+            } else {
+                // 切换玩家
+                switch_player();
+            }
         }
+        // 如果不可以，什么都不做
     }
 }
 
@@ -53,5 +58,14 @@ void Game::switch_player(){
     } else
     {
         std::cout << "Something is wrong, please look around if there is a third player..." << std::endl;
+    }
+}
+
+bool Game::check_position(std::array<int, 2> position){
+    if (board.get_piece(position[0], position[1]) == 0){
+        return true;
+    } else {
+        std::cout << "输入非法，该位置已有棋子" << std::endl;
+        return false;
     }
 }
