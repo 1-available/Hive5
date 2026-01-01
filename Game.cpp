@@ -2,12 +2,15 @@
 #include "Board.h"
 #include "Input.h"
 #include "UI.h"
+#include "AI.h"
 
 #include <iostream>
 #include <array>
 
 Game::Game() {
     player = 1;
+    isAI1 = true;
+    isAI2 = true;
 }
 
 const Board& Game::get_board() const{
@@ -31,7 +34,7 @@ void Game::update(){
     ui.display_game(*this); //所有的显示都在这里进行，每一次循环刷新一次
     // 获取用户输入
     std::array<int, 2> position;
-    position = get_input();
+    position = get_position(board, player);
     if (position[0] == -1) {
         write_message("输入非法，请输入 A1 到 O15 范围内的坐标。");
         return;
@@ -56,8 +59,14 @@ void Game::update(){
     }
 }
 
-std::array<int, 2> Game::get_input(){
-    return input.get_input();
+std::array<int, 2> Game::get_position(Board board, int player){
+    if (current_player_isAI())
+    {
+        return ai.place_piece(board, player);
+    }else
+    {
+        return input.get_input();
+    }
 }
 
 bool Game::check_win(){
@@ -89,4 +98,16 @@ void Game::write_message(std::string str){
 
 void Game::clear_message(){
     message = "";
+}
+
+bool Game::current_player_isAI(){
+    if (player == 1)
+    {
+        return isAI1;
+    }else
+    {
+        return isAI2;
+    }
+    
+    
 }

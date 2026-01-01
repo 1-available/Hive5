@@ -3,6 +3,7 @@
 #include "Board.h"
 #include "Input.h"
 #include "UI.h"
+#include "AI.h"
 
 #include <array>
 
@@ -24,8 +25,11 @@ private:
     Board board;
     Input input;
     UI ui;
+    AI ai;
     int player; // the player that is playing in this turn (player1: player=1, black; player2: player=-1, white)
-    std::array<int, 2> get_input();
+    bool isAI1; // player1 is AI: true, player1 is real person: false
+    bool isAI2; // player2 is AI: true, player2 is real person: false
+    std::array<int, 2> get_position(Board board, int player);
     /**
      * @return true: this position is empty, false:this position already have piece
      */
@@ -37,4 +41,5 @@ private:
     void switch_player();
     void write_message(std::string);
     void clear_message();
+    bool current_player_isAI();
 };
