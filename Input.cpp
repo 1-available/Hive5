@@ -30,11 +30,17 @@ Message Input::get_input() {
 
     char letter = 0;
     int number = -1;
+    bool hasInputChar = false;
 
     // Parse input, order-independent
     for (char c : input) {
         if (std::isalpha(c)) {
+            if (hasInputChar) {
+                message.request_type = 3;
+                return message;
+            }
             letter = std::toupper(c);
+            hasInputChar = true;
         } else if (std::isdigit(c)) {
             number = (number == -1) ? (c - '0') : number * 10 + (c - '0');
         }

@@ -12,6 +12,7 @@ void UI::display_game(const Game& game) {
     display_board(game.get_board());
     std::cout << "上一次输入用时" << game.get_used_time() << "s.(本次输入后刷新)\n";
     display_string(game.message);
+    
     if (game.get_player() == 1) {
         display_string("当前玩家: player1 ●");
     } else {

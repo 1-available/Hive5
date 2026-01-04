@@ -17,7 +17,7 @@ std::string Board::to_string() const{
     for (auto row : board) {
         for (auto order : row) {
             if (order==0){
-                sboard << " + ";
+                sboard << " ∙ "; // 用“+”会看眼瞎的
             } else if (order==1){
                 sboard << " ● ";
             } else if (order==-1){
