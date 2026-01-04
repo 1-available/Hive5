@@ -63,4 +63,8 @@ private:
      * @brief 将某一边的vacancy的状态修改为staus
      */
     void vacancy_status(int side, bool status);
+
+    static bool is_LIVE_THREE_1(const Shape& shape);
+    static bool is_LIVE_THREE_2(const Shape& shape);
+    static bool is_LIVE_THREE_3(const Shape& shape);
 };
