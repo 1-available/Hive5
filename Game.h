@@ -47,15 +47,15 @@ private:
     bool isAI2; // player2 is AI: true, player2 is real person: false
     bool useTimer; // time limit is applied: true
 
-    std::array<int, 2> get_position(Board board, int player);
+    Message get_input(Board board, int player);
     /**
      * @return true: this position is empty, false:this position already have piece
      */
     bool check_position(std::array<int, 2>);
     /**
-     * @return true: this player win; false: the game is playing
+     * @return 0:继续进行；1：player1 win；2：player2 win；3：棋盘已满，平局
      */
-    bool check_win(std::array<int, 2> position);
+    int check_win(std::array<int, 2> position);
     /**
      * @return time (seconds) passed by last move.
      */

@@ -5,12 +5,28 @@
 #include <string>
 #include <cctype>
 
-std::array<int, 2> Input::get_input() {
+Message::Message(){
+    request_type = 0;
+    input_position = {-1, -1};
+}
+
+Message Input::get_input() {
+    Message message;
     std::array<int, 2> input_result = { -1, -1 };
 
     std::string input;
     //std::cout << "请输入坐标（例： A1 或 1A）：" << std::endl;
     std::cin >> input;
+
+    if ((input == "Q") || (input == "q"))
+    {
+        message.request_type = 1;
+        return message;
+    }else if ((input == "S") || (input == "s"))
+    {
+        message.request_type = 2;
+        return message;
+    }
 
     char letter = 0;
     int number = -1;
@@ -29,9 +45,11 @@ std::array<int, 2> Input::get_input() {
         int col = letter - 'A';   // A-O -> 0-14
         int row = number - 1;     // 1-15 -> 0-14
         input_result = { row, col };
+        message.input_position = input_result;
+        return message;
     } else {
+        message.request_type = 3;
+        return message;
         //std::cerr << "输入非法，请输入 A1 到 O15 范围内的坐标。" << std::endl;
     }
-
-    return input_result;
 }

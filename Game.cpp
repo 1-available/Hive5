@@ -31,11 +31,15 @@ const int Game::get_used_time() const{
 }
 
 void Game::init_game() {
+    ui.clear_page();
+    std::cout << "五子棋游戏" << std::endl;
+    std::cout << "auther 韩书钰" << std::endl;
+    std::cout << "退出游戏：Q, 认输：S" << std::endl << std::endl;
     std::string get_char;
-    std::cout << "玩家1是否是AI？(Y/N)";
+    std::cout << "玩家1是否设置为AI？(Y/N)";
     std::cin >> get_char;
     isAI1 = (get_char == "Y" || get_char == "y") ? true : false;
-    std::cout << "玩家2是否是AI？(Y/N)";
+    std::cout << "玩家2是否设置为AI？(Y/N)";
     std::cin >> get_char;
     isAI2 = (get_char == "Y" || get_char == "y") ? true : false;
     std::cout << "是否启用时间限制15s？(Y/N)";
@@ -57,18 +61,35 @@ void Game::update(){
     ui.clear_page();
     ui.display_game(*this); //所有的显示都在这里进行，每一次循环刷新一次
     // 获取用户输入
-    std::array<int, 2> position;
-    position = get_position(board, player);
-    if (position[0] == -1) {
+    Message message = get_input(board, player);
+    std::array<int, 2> position = message.input_position;
+    if (message.request_type == 1)
+    {
+        write_message("退出游戏");
+        is_over = true;
+        return;
+    }else if (message.request_type == 2)
+    {
+        if (player == 1)
+        {
+            write_message("玩家1投降，玩家2获胜！");
+            is_over = true;
+            return;
+        }else if (player == -1)
+        {
+            write_message("玩家2投降，玩家1获胜！");
+            is_over = true;
+            return;
+        }
+    }else if (message.request_type == 3) {
         write_message("输入非法，请输入 A1 到 O15 范围内的坐标。");
         return;
-    }
-    // 检查位置是否可以落子：非乱码，范围内（否则position={-1,-1}），无子
-    // 如果可以落子，修改棋盘，换玩家
-    if (!check_position(position)) {
+        // 检查位置是否可以落子：非乱码，范围内，无子
+    }else if (!check_position(position)) {
         write_message("输入非法，该位置已有棋子");
         return;
     }
+    // 如果可以落子，修改棋盘，换玩家
     clear_message();
     // 更新落子用时
     used_time = get_time_elapsed();
@@ -127,17 +148,19 @@ void Game::update(){
     */
 }
 
-std::array<int, 2> Game::get_position(Board board, int player){
+Message Game::get_input(Board board, int player){
+    Message message;
     if (current_player_isAI())
     {
-        return ai.place_piece(board, player);
+        message.input_position = ai.place_piece(board, player);
+        return message;
     }else
     {
         return input.get_input();
     }
 }
 
-bool Game::check_win(std::array<int, 2> position){
+int Game::check_win(std::array<int, 2> position){
     return Referee::check_win(board, position);
 }
 
