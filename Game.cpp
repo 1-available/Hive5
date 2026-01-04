@@ -31,16 +31,16 @@ const int Game::get_used_time() const{
 }
 
 void Game::init_game() {
-    char get_char;
+    std::string get_char;
     std::cout << "玩家1是否是AI？(Y/N)";
     std::cin >> get_char;
-    isAI1 = (get_char == 'Y' || get_char == 'y') ? true : false;
+    isAI1 = (get_char == "Y" || get_char == "y") ? true : false;
     std::cout << "玩家2是否是AI？(Y/N)";
     std::cin >> get_char;
-    isAI2 = (get_char == 'Y' || get_char == 'y') ? true : false;
+    isAI2 = (get_char == "Y" || get_char == "y") ? true : false;
     std::cout << "是否启用时间限制15s？(Y/N)";
     std::cin >> get_char;
-    useTimer = (get_char == 'Y' || get_char == 'y') ? true : false;
+    useTimer = (get_char == "Y" || get_char == "y") ? true : false;
 }
 
 void Game::game_turn(){
@@ -79,7 +79,12 @@ void Game::update(){
         return;
     }
     // 判断是否禁手
-
+    if (Referee::prohibited_move(board, position, player))
+    {
+        write_message("黑棋禁手，玩家2获胜！");
+        is_over = true;
+        return;
+    }
     // 改棋盘
     board.add_piece(position[0], position[1], player);
     // 弃用，我们不再单独展示改完后的棋盘，直接随游戏统一刷新，这样更新逻辑里就不需要考虑怎么显示的问题了
