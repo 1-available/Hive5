@@ -3,11 +3,26 @@
 #include <array>
 #include "Board.h"
 
+/**
+ * @brief 这个类说明了一个Shape所属的类型，用的时候用ShapeType::FIVE这样的值，就和int一样用
+ */
+enum class ShapeType{
+    NONE, // 不属于任何类型
+    OVERLINE, // 长连
+    FIVE, // 五
+    LIVE_FOUR, // 活四
+    SLEEP_FOUR, // 冲四
+    DOUBLE_SLEEP_FOUR, // 同一条线连成两个冲四，对黑棋是禁手，对白棋是普通冲四
+};
+
 class Shape{
 public:
     int direction; // 0: ——, 1: |, 2: /, 3: \.
-    int length; // including break
+    int length; // including breaking
+    int real_length; // without breaking
     int breaking; // if continues after break (breaking=0:没有空格；1:某个side方向有一个空格；2：side=1方向有一个空格，side=-1方向没有空格；3：side=1方向没有空格，side=-1方向有一个空格；4：side=1方向有一个空格，side=-1方向有一个空格)
+    int breaked_length1; // length after one breaking in side 1
+    int breaked_length2; // length after one breaking in side -1
     bool vacancy1; // true: can add piece at one end (right or down, side=1)
     bool vacancy2; // true: can add piece at the other end (left or up, side=-1)
 
@@ -26,6 +41,7 @@ public:
      * @param side 决定向给定方向的哪一边获取棋形(1: 右 下； -1： 左 上)
      */
     static Shape getShape(const Board& board, std::array<int, 2> position, int player, int direction, int side);
+    static ShapeType getShapeType(const Shape& shape);
 
 private:
     /**

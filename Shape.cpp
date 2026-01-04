@@ -3,7 +3,10 @@
 Shape::Shape(){
     direction = 0;
     length = 1;
+    real_length = 1;
     breaking = 0;
+    breaked_length1 = 0;
+    breaked_length2 = 0;
     vacancy1 = true;
     vacancy2 = true;
 }
@@ -29,7 +32,7 @@ Shape Shape::getShape(const Board& board, std::array<int, 2> position, int playe
 
     // 如果当前位置的棋子类型与之前的棋子类型都相同
     //int side = 1;
-    for (int i = 0; i < 15; i++)
+    for (int i = 0; i < 16; i++)
     {
         current_position = next_position(current_position, direction, side);
         if_next_position = next_position(current_position, direction, side);
@@ -40,6 +43,7 @@ Shape Shape::getShape(const Board& board, std::array<int, 2> position, int playe
                 if (board.get_piece(current_position[0],current_position[1]) == player) //仍为连子        
                 {
                     shape.length += 1; //continue;
+                    shape.real_length += 1;
                 }else if (board.get_piece(current_position[0],current_position[1]) == (player * (-1))) //在该处被对方棋子截断
                 {
                     shape.vacancy_status(side, false);//shape.vacancy1 = false;
@@ -104,6 +108,7 @@ Shape Shape::getShape(const Board& board, std::array<int, 2> position, int playe
             }   
         }
     }  
+    return shape;
     // 更新Shape对象
     // 如果不同，分情况
     // 是空位？
@@ -114,10 +119,37 @@ Shape Shape::getShape(const Board& board, std::array<int, 2> position, int playe
     // 获取完棋形，返回Shape对象
 }
 
+ShapeType Shape::getShapeType(const Shape& shape) {
+    if (shape.real_length > 5)
+    {
+        return ShapeType::OVERLINE;
+    }else if (shape.real_length == 5) 
+    {
+        return ShapeType::FIVE;
+    }else if ((shape.real_length == 4) && ((shape.vacancy1 == true)||(shape.breaking == 2)||(shape.breaking == 4)) && (shape.vacancy2 == true)||(shape.breaking == 3)||(shape.breaking == 4))
+    {
+        return ShapeType::LIVE_FOUR;
+    }else if (((shape.real_length == 3)&&((shape.breaked_length1 == 1)&&(shape.breaked_length2 == 1))) || ((shape.real_length == 2)&&((shape.breaked_length1 == 2)&&(shape.breaked_length2 == 2))) || ((shape.real_length == 1)&&((shape.breaked_length1 == 3)&&(shape.breaked_length2 == 3))))
+    {
+        return ShapeType::DOUBLE_SLEEP_FOUR;
+    }else if (((shape.real_length == 4)&&(((shape.vacancy1 == true)||(shape.breaking == 2)||(shape.breaking == 4))||((shape.vacancy2 == true)||(shape.breaking == 3)||(shape.breaking == 4)))) || ((shape.real_length == 3)&&((shape.breaked_length1 == 1)||(shape.breaked_length2 == 1))) || ((shape.real_length == 2)&&((shape.breaked_length1 == 2)||(shape.breaked_length2 == 2))) || ((shape.real_length == 1)&&((shape.breaked_length1 == 3)||(shape.breaked_length2 == 3))))
+    {
+        return ShapeType::SLEEP_FOUR;
+    }
+    
+    
+    
+    else
+    {
+        return ShapeType::NONE;
+    }
+}
+
 Shape Shape::mergeShape(const Shape& shape1, const Shape& shape2){
     Shape shape;
     shape.direction = shape1.direction; // noly for two shapes with the same direction and starting point, and opposite side
     shape.length = shape1.length + shape2.length -1;
+    shape.real_length = shape1.real_length + shape2.real_length -1;
     shape.vacancy1 = shape1.vacancy1;
     shape.vacancy2 = shape2.vacancy2;
 
@@ -129,15 +161,19 @@ Shape Shape::mergeShape(const Shape& shape1, const Shape& shape2){
         }else if (shape2.breaking == 1)
         {
             shape.breaking = 3;
+            shape.breaked_length2 = shape2.length - shape2.real_length -1;
         }
     }else if (shape1.breaking == 1)
     {
         if (shape2.breaking == 0)
         {
             shape.breaking = 2;
+            shape.breaked_length1 = shape1.length - shape1.real_length -1;
         }else if (shape2.breaking == 1)
         {
             shape.breaking = 4;
+            shape.breaked_length1 = shape1.length - shape1.real_length -1;
+            shape.breaked_length2 = shape2.length - shape2.real_length -1;
         }
     }
 
