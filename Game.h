@@ -55,7 +55,7 @@ private:
     /**
      * @return true: this player win; false: the game is playing
      */
-    bool check_win();
+    bool check_win(std::array<int, 2> position);
     /**
      * @return time (seconds) passed by last move.
      */

@@ -1,4 +1,5 @@
 #include "AI.h"
+#include "Referee.h"
 #include <random>
 
 std::array<int, 2> AI::place_piece(Board board, int player){
@@ -30,7 +31,7 @@ std::array<int, 2> AI::calculate_piece(Board board, int player){
     {
         for (int j = 0; j < 15; j++)
         {
-            if (board.get_piece(i, j) == 0)
+            if ((board.get_piece(i, j) == 0) && (!Referee::prohibited_move(board, {i, j}, player)))
             {
                 current_position = {i, j};
                 current_score = calculate_score(board, current_position, player);
@@ -54,7 +55,7 @@ int AI::calculate_score(Board board, std::array<int, 2> position, int player){
         my_score += shape_score(Shape::getShapeType(Shape::getShape(board, position, player, i)));
         opponent_score += shape_score(Shape::getShapeType(Shape::getShape(board, position, player * (-1), i)));
     }
-    int score = my_score * 1.3 + opponent_score + location_score;
+    int score = my_score * 1.5 + opponent_score + location_score;
     return score;
 }
 
@@ -68,19 +69,19 @@ int AI::shape_score(ShapeType type){
         score = 500000;
     }else if (type == ShapeType::LIVE_FOUR)
     {
-        score = 25000;
+        score = 15000;
     }else if (type == ShapeType::SLEEP_FOUR)
     {
-        score = 5000;
+        score = 1500;
     }else if (type == ShapeType::DOUBLE_SLEEP_FOUR)
     {
-        score = 5000;
+        score = 1500;
     }else if (type == ShapeType::LIVE_THREE)
     {
-        score = 2500;
+        score = 600;
     }else if (type == ShapeType::SLEEP_THREE)
     {
-        score = 500;
+        score = 250;
     }else if (type == ShapeType::LIVE_TWO)
     {
         score = 100;

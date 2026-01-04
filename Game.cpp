@@ -4,6 +4,7 @@
 #include "UI.h"
 #include "AI.h"
 #include "Shape.h"
+#include "Referee.h"
 
 #include <iostream>
 #include <array>
@@ -37,7 +38,7 @@ void Game::init_game() {
     std::cout << "玩家2是否是AI？(Y/N)";
     std::cin >> get_char;
     isAI2 = (get_char == 'Y' || get_char == 'y') ? true : false;
-    std::cout << "是否启用时间限制？(Y/N)";
+    std::cout << "是否启用时间限制15s？(Y/N)";
     std::cin >> get_char;
     useTimer = (get_char == 'Y' || get_char == 'y') ? true : false;
 }
@@ -77,15 +78,29 @@ void Game::update(){
         is_over = true;
         return;
     }
+    // 判断是否禁手
+
     // 改棋盘
     board.add_piece(position[0], position[1], player);
     // 弃用，我们不再单独展示改完后的棋盘，直接随游戏统一刷新，这样更新逻辑里就不需要考虑怎么显示的问题了
     // display_board();
     // 检查输赢，如果赢了跳出循环
-    if (check_win()) {
+    if (check_win(position) == 1) {
+        write_message("玩家1获胜！"); // 无特殊胜利显示，仅提醒
         is_over = true;
         return;
-    } else {
+    }else if (check_win(position) == 2)
+    {
+        write_message("玩家2获胜！"); // 无特殊胜利显示，仅提醒
+        is_over = true;
+        return;
+    }else if (check_win(position) == 3)
+    {
+        write_message("棋盘已满，平局。"); // 无特殊胜利显示，仅提醒
+        is_over = true;
+        return;
+    }else 
+    {
         // 切换玩家
         switch_player();
         // 重置计时器
@@ -117,9 +132,8 @@ std::array<int, 2> Game::get_position(Board board, int player){
     }
 }
 
-bool Game::check_win(){
-    // @todo
-    return false;
+bool Game::check_win(std::array<int, 2> position){
+    return Referee::check_win(board, position);
 }
 
 int Game::get_time_elapsed() {
