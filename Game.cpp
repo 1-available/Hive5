@@ -55,6 +55,9 @@ void Game::game_turn(){
     // 如果游戏结束，最后一次绘制屏幕
     ui.clear_page();
     ui.display_game(*this);
+    std::string get_char;
+    std::cout << "游戏结束，请输入Q退出";
+    std::cin >> get_char;
 }
 
 void Game::update(){
